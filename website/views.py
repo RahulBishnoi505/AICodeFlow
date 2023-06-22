@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.contrib import messages
 
 # Create your views here.
 
@@ -8,5 +9,9 @@ def home(request):
     if request.method == "POST":
         code = request.POST['code']
         language = request.POST['language']
+
+        if language == "Programming Language":
+            messages.success(request, 'Please select a programming language')
+            return render(request, "website/index.html", {"language_list":language_list, "code":code, "language": language})
         return render(request, "website/index.html", {"language_list":language_list, "code":code, "language": language})
     return render(request, "website/index.html", {"language_list":language_list})

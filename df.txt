@@ -1,3 +1,0 @@
-language_list = ["markup", "css", "clike", "javascript", "c", "csharp", "cpp", "dart", "django", "go", 
-"java", "markup-templating", "matlab", "mongodb", "objectivec", "php", "powershell", 
-"python", "r", "ruby", "rust", "sass", "scheme", "sql", "swift", "yaml"]

@@ -1,5 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import  UserCreationForm
+from .forms import SignUpForm
+
 import openai
 
 from dotenv import load_dotenv
@@ -8,7 +12,7 @@ import os
 
 # Create your views here.
 
-language_list = ['c', 'cpp', 'csharp', 'css', 'dart', 'django', 'go', 'java', 'javascript', 'matlab', 'mongodb', 'objectivec', 'php', 'powershell', 'python', 'r', 'ruby', 'rust', 'scheme', 'sql', 'swift']
+language_list = ['c', 'css', 'django', 'java', 'javascript', 'matlab', 'php', 'powershell', 'python', 'r', 'ruby', 'rust', 'sql', 'swift']
 
 def home(request):
     if request.method == "POST":
@@ -47,6 +51,7 @@ def home(request):
 
 
 def suggest(request):
+    
     if request.method == "POST":
         code = request.POST['code']
         language = request.POST['language']
@@ -78,3 +83,45 @@ def suggest(request):
 
 
     return render(request, "website/suggest.html", {"language_list":language_list})    
+
+
+def login_user(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            messages.success(request, "Logged in Successfuly")
+            return redirect('home')
+        else:
+            messages.success(request, "Error Logging In. Please Try Again.")
+            return redirect('home')
+
+    else:
+        return render(request, "website/index.html", {})
+
+
+
+def logout_user(request):
+    logout(request)
+    messages.success(request, "You Have Been Logged Out.")
+    return redirect('home')
+
+def register_user(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password1']
+            user = authenticate(username=username, password=password)
+            login(request, user)
+            messages.success(request, 'You Have Registered Successfully')
+
+            return redirect('home')
+    else:
+        form = SignUpForm()
+
+    return render(request, 'website/register.html', {'form':form})
+

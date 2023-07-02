@@ -133,4 +133,16 @@ def register_user(request):
 
 
 def history(request):
-    return render(request, 'website/history.html', {})
+    if request.user.is_authenticated: 
+        user_data = UserData.objects.filter(user_id=request.user.id)
+        return render(request, 'website/history.html', {'user_data':user_data})
+    else:
+        messages.success(request, 'Login To View This Page')
+        return redirect('home')
+
+
+def delete_history(reqeust, history_id):
+    history = UserData.objects.get(pk=history_id)
+    history.delete()
+    messages.success(reqeust, 'Successfully Deleted..')
+    return redirect('history')

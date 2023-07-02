@@ -1,0 +1,27 @@
+{% extends 'website/base.html' %}
+
+{% block content %}
+
+{% if user_data %}
+
+
+{% for data in user_data %}
+{{ data.question }}<br/>
+
+<pre>
+<code class='line-numbers language-{{ data.language }}'>
+{{ data.answer}}
+</code>
+</pre>
+
+<a href='{% url "delete_history" data.id %}' class='btn btn-outline-secondary btn-sm'>Delete</a>
+<br/><br/>
+
+{% endfor %}
+
+
+
+
+{% endif %}
+
+{% endblock %}

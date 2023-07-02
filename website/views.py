@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import  UserCreationForm
 from .forms import SignUpForm
+from .models import UserData
 
 import openai
 
@@ -39,7 +40,10 @@ def home(request):
                     presence_penalty = 0.0
                     )
                 response = response["choices"][0]["text"].strip()
-                print(response)
+
+                # Saving data to database
+                user_record = UserData(question=code, answer=response, language=language, user=request.user)
+                user_record.save()
                 return render(request, "website/index.html", {"language_list":language_list, "response": response, "language": language})
             except Exception as e:
                 return render(request, "website/index.html", {"language_list":language_list, "code": e, "language": language})
@@ -76,7 +80,9 @@ def suggest(request):
                     presence_penalty = 0.0
                     )
                 response = response["choices"][0]["text"].strip()
-                print(response)
+                # Saving to database
+                user_record = UserData(question=code, answer=response, language=language, user=request.user)
+                user_record.save()
                 return render(request, "website/suggest.html", {"language_list":language_list, "response": response, "language": language})
             except Exception as e:
                 return render(request, "website/suggest.html", {"language_list":language_list, "code": e, "language": language})
@@ -85,7 +91,7 @@ def suggest(request):
     return render(request, "website/suggest.html", {"language_list":language_list})    
 
 
-def login_user(request):
+def login_user(request):    
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
@@ -125,3 +131,6 @@ def register_user(request):
 
     return render(request, 'website/register.html', {'form':form})
 
+
+def history(request):
+    return render(request, 'website/history.html', {})
